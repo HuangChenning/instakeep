@@ -3,6 +3,12 @@
   "name": "InstaKeep · IG 留存",
   "version": "0.1.0",
   "description": "Instagram 帖子批量及单帖本机备份测试版，支持持久队列与恢复。",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
   "permissions": [
     "activeTab",
     "scripting",
@@ -22,7 +28,11 @@
   },
   "action": {
     "default_popup": "ui/popup.html",
-    "default_title": "InstaKeep · IG 留存"
+    "default_title": "InstaKeep · IG 留存",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png"
+    }
   },
   "content_scripts": [
     {

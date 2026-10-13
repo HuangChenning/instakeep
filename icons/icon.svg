@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">InstaKeep</title>
+  <desc id="desc">A forest-green folder with a gold latch and one kept picture inside.</desc>
+  <rect width="128" height="128" rx="28" fill="#215444"/>
+  <rect x="24" y="20" width="48" height="32" rx="7" fill="#D7A956"/>
+  <rect x="16" y="44" width="96" height="64" rx="10" fill="#F4F7F1"/>
+  <rect x="56" y="58" width="42" height="34" rx="4" fill="#16382D"/>
+</svg>
