@@ -1,5 +1,7 @@
 # InstaKeep Implementation Plan
 
+> 历史文档：保留早期规划与当时的验证结果，不代表当前支持范围、保存方式或测试数量。当前版本见 [README](../../../README.zh-CN.md)与[验收记录](../../validation.md)。
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 实现本机使用的 Instagram 单主页备份扩展，覆盖帖子、轮播、Reels、当前快拍和精选，并支持增量去重及任务恢复。

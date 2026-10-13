@@ -8,3 +8,13 @@ downloads/
 
 # 含本机路径、账号名和具体帖子标识的验收流水，仅留在本地
 docs/progress.md
+
+# 本地会话、凭据及验收截图不进入仓库
+.env
+.env.*
+!.env.example
+*.har
+*.cookies
+playwright/.auth/
+.codex/
+codex-clipboard-*.png

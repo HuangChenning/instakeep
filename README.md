@@ -15,7 +15,7 @@ A Chrome extension preview. It uses the Instagram session already open in the br
 
 ## Verified results
 
-`npm test` currently passes 49 tests, with 0 failures and 0 skipped.
+As of 2026-10-13, `npm test` passes 49 tests, with 0 failures and 0 skipped.
 
 Separate browser scripts cover the folder handle, a write that is confirmed only after the file is closed, keeping same-name files, a queue that survives a browser restart, pause and resume, and post buttons bound to their own home-feed or detail post. The scripts are `scripts/destination-check.mjs`, `scripts/browser-check.mjs`, and `scripts/post-download-check.mjs`.
 
@@ -38,7 +38,7 @@ cd instakeep
 
 1. Open `chrome://extensions`, turn on Developer mode, choose “Load unpacked”, and select this repository.
 2. Open the extension and choose “选择保存目录”. The picker starts in the system downloads folder. After you authorize it, files are written into that folder and do not follow Chrome’s download settings.
-3. To save one post, open the post and click the InstaKeep icon in the action row.
+3. To save one post’s images, click the InstaKeep download icon after Share on the home feed or the post detail page.
 4. To save a profile, finish the observation above, then choose “批量下载主页帖子”.
 
 Subfolder and filename templates are in the popup. Fields are account, date, type, content id, and carousel index.
@@ -50,3 +50,9 @@ Subfolder and filename templates are in the popup. Fields are account, date, typ
 - The extension does not collect passwords or offer its own login. Settings, jobs, and completion records stay on this computer.
 - There is no analytics report, cloud sync, or extension server. Media addresses are used only to write files into the folder you authorized.
 - One open profile at a time. This is a personal preview and it is not published on the Chrome Web Store.
+
+## Privacy and documentation status
+
+The optional source JSON can contain the post account, permalink, and caption. Downloaded media and JSON are local backups; keep them out of code uploads. Before reporting an issue, remove account names, post identifiers, local paths, cookies, tokens, and signed media URLs.
+
+This README and the [validation record](docs/validation.md) describe current functionality and verification limits. The [early implementation plan](docs/superpowers/plans/2026-10-12-instakeep.md) and [first-stage feasibility record](docs/feasibility.md) are historical references, not statements of current support or test counts.
