@@ -1,36 +1,36 @@
-[English](README.en.md)
+[中文](README.zh-CN.md)
 
-<img src="./assets/readme/hero-zh.svg" width="100%" alt="InstaKeep 把已打开的 Instagram 帖子图片、视频、轮播和来源 JSON 写入你选定的文件夹">
+<img src="./assets/readme/hero-en.svg" width="100%" alt="InstaKeep writes images, video, carousel items, and a source JSON file from an open Instagram post into a folder you choose">
 
-# InstaKeep · IG 留存
+# InstaKeep
 
-Chrome 扩展测试版。它使用浏览器里已经登录的 Instagram，把主页帖子或当前帖子的媒体写进你选的文件夹，不经过第三方下载站。
+A Chrome extension preview. It uses the Instagram session already open in the browser and writes profile posts, or the current post, into a folder you choose. It does not send media through a third-party downloader.
 
-## 它能做什么
+## What it does
 
-- 批量保存当前主页里的帖子：图片、视频和全部轮播项。
-- 帖子操作栏上的「InstaKeep · 下载全部图片」会保存该帖全部图片，并在帖子旁显示进度、完成或失败原因。
-- 混合轮播里的视频，用弹窗中的「下载当前帖子的全部内容」。
-- 默认再写一条来源 JSON：原帖链接、账号、能取到的发布时间、文案和媒体清单。可以关掉。
-- 默认文件名是 `{date}_{id}_{index}`，例如日期、内容 ID 和轮播序号。文件直接落在所选文件夹；只有你填写子文件夹时才额外建目录。同名文件保留，不覆盖。
+- Save the posts on the open profile: images, video, and every carousel item.
+- The post action labeled “InstaKeep · 下载全部图片” saves every image in that post and shows progress, success, or the failure reason beside the post.
+- Video inside a mixed carousel is saved from the popup action “下载当前帖子的全部内容”.
+- A source JSON file is on by default: post URL, account, publish time when Instagram provides it, caption, and the media list. You can turn it off.
+- The default filename is `{date}_{id}_{index}`: date, content id, and carousel index. Files land in the chosen folder itself. A subfolder is created only when you set one. An existing file with the same name is kept.
 
-## 验证效果
+## Verified results
 
-`npm test` 当前 44 项通过，0 失败，0 跳过。
+`npm test` currently passes 44 tests, with 0 failures and 0 skipped.
 
-独立浏览器脚本覆盖了目录句柄、写入后确认成功、重名保留、队列在浏览器重启后仍在、暂停与恢复，以及帖子按钮只出现在帖子页。脚本是 `scripts/destination-check.mjs`、`scripts/browser-check.mjs` 和 `scripts/post-download-check.mjs`。
+Separate browser scripts cover the folder handle, a write that is confirmed only after the file is closed, keeping same-name files, a queue that survives a browser restart, pause and resume, and a post button that appears only on a post. The scripts are `scripts/destination-check.mjs`, `scripts/browser-check.mjs`, and `scripts/post-download-check.mjs`.
 
-在真实 Chrome 里，从主页打开一条帖子后，页面按钮已把该帖的多张图片和来源 JSON 写入所选目录，且没有打开设置弹窗。完整主页批量，以及真实视频能否播放、是否带声音，还没有验证。记录见 [docs/validation.md](docs/validation.md)。
+In real Chrome, opening a post from a profile and using the page button wrote that post’s images and source JSON into the chosen folder without opening the settings popup. A full profile backup, and whether a real video plays with audio, are not verified yet. The record is in [docs/validation.md](docs/validation.md) (Chinese).
 
-## 保存流程
+## How it works
 
-<img src="./assets/readme/flow-zh.svg" width="100%" alt="已登录的 Instagram 页面进入本机队列，再直接写入所选文件夹；队列可去重、暂停和重试">
+<img src="./assets/readme/flow-en.svg" width="100%" alt="A signed-in Instagram page feeds a local queue that writes directly into the chosen folder, with duplicate skipping, pause, and retry">
 
-下载时请保持 Chrome 和原来的 Instagram 页面开着。可以暂停、恢复，以及重试失败项。浏览器重启后，文件夹可能需要重新授权。
+Leave Chrome and the original Instagram page open while a job runs. You can pause, resume, and retry failed items. After a browser restart, the folder may need to be authorized again.
 
-批量备份前，在已登录的主页打开扩展下方的临时观察，刷新并向下滚动一次，再查看观察结果。单帖从原帖页面开始。
+Before a profile backup, turn on the temporary observation at the bottom of the popup, refresh the signed-in profile, scroll down once, then read the observation. A single-post job starts from that post’s page.
 
-## 开始使用
+## Getting started
 
 ```bash
 git clone https://github.com/HuangChenning/instakeep.git
@@ -38,17 +38,17 @@ cd instakeep
 npm test
 ```
 
-1. 打开 `chrome://extensions`，开启开发者模式，选择「加载已解压的扩展程序」，选中本仓库目录。
-2. 打开扩展，点击「选择保存目录」。选择器从系统下载文件夹开始。授权后，文件写入该文件夹本身，不使用 Chrome 的下载设置。
-3. 保存单帖：打开帖子详情，点击操作栏里的 InstaKeep 图标。
-4. 批量保存：完成上面的临时观察后，点击「批量下载主页帖子」。
+1. Open `chrome://extensions`, turn on Developer mode, choose “Load unpacked”, and select this repository.
+2. Open the extension and choose “选择保存目录”. The picker starts in the system downloads folder. After you authorize it, files are written into that folder and do not follow Chrome’s download settings.
+3. To save one post, open the post and click the InstaKeep icon in the action row.
+4. To save a profile, finish the observation above, then choose “批量下载主页帖子”.
 
-子文件夹和文件名模板在弹窗里，字段有账号、日期、类型、内容 ID、轮播序号。
+Subfolder and filename templates are in the popup. Fields are account, date, type, content id, and carousel index.
 
-## 当前限制
+## Limitations
 
-- 现在只做帖子。Reels 分类、快拍、精选没有启用。
-- 只能保存当前账号看得到、并且 Instagram 仍提供的内容。已删除、已过期或无权查看的内容不在范围内。
-- 不收集密码，也不提供扩展自己的登录。设置、任务和完成记录只留在本机。
-- 没有统计上报、云同步或扩展自己的服务器。媒体地址只用于把文件写入你授权的文件夹。
-- 一次处理当前打开的一个主页。个人使用的测试版，未上架 Chrome 网上应用店。
+- Posts only. Reels as a category, stories, and highlights are not enabled.
+- A backup includes only what the signed-in account can open and Instagram still serves. Deleted, expired, or inaccessible posts are outside that promise.
+- The extension does not collect passwords or offer its own login. Settings, jobs, and completion records stay on this computer.
+- There is no analytics report, cloud sync, or extension server. Media addresses are used only to write files into the folder you authorized.
+- One open profile at a time. This is a personal preview and it is not published on the Chrome Web Store.
