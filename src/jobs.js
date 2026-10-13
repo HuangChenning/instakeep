@@ -38,6 +38,7 @@ async function refreshMedia(taskId,context,contentId,mediaId) {
 export async function runTask(taskId) {
   if(running.has(taskId))return;
   running.add(taskId);
+  const freshMedia=new Map();
   try {
     let task=await loadTask(taskId);
     if(!task || !Number.isInteger(task.tabId) || !['scanning','downloading'].includes(task.state))return;
@@ -49,6 +50,7 @@ export async function runTask(taskId) {
         const page=task.singleContentId ? {contents:[normalizeContent(result.detail,task.context,'posts')],context:task.context,nextCursor:null,terminal:true}
           :normalizePage(result.response,task.context,category,cursor);
         if(task.imagesOnly)page.contents=page.contents.map(content=>({...content,media:content.media.filter(media=>media.kind==='image')}));
+        for(const content of page.contents)for(const media of content.media)freshMedia.set(`${content.id}:${media.id}`,media);
         task=await loadTask(taskId);
         if(task.state==='paused')return;
         await saveScanPage(taskId,category,page);
@@ -59,7 +61,7 @@ export async function runTask(taskId) {
     }
     if((await loadTask(taskId)).state==='paused')return;
     await updateTask(taskId,{state:'downloading',reason:null});
-    await pump(taskId,(context,contentId,mediaId)=>refreshMedia(taskId,context,contentId,mediaId));
+    await pump(taskId,(context,contentId,mediaId)=>freshMedia.get(`${contentId}:${mediaId}`) ?? refreshMedia(taskId,context,contentId,mediaId));
     task=await loadTask(taskId);
     const items=await loadItems(taskId);
     if(task.state==='paused')return;

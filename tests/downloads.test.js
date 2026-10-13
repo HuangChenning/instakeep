@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { retryPolicy, recoveredState, downloadOptions } from '../src/downloads.js';
+import { retryPolicy, recoveredState, downloadOptions, runPool } from '../src/downloads.js';
 test('only Chrome complete confirms success, missing associations stay unknown', () => {
   assert.equal(recoveredState({state:'starting',downloadId:null},null),'unknown');
   assert.equal(recoveredState({state:'downloading',downloadId:7},{id:8,state:'complete'}),'unknown');
@@ -22,4 +22,14 @@ test('downloads never overwrite and unsupported locations cannot receive arbitra
   assert.ok(options.url.startsWith('data:application/json'));
   assert.throws(()=>downloadOptions({relativePath:'../x',type:'metadata',payload:{}}),/路径/);
   assert.throws(()=>downloadOptions({relativePath:'x.jpg',type:'media'},'https://evil.test/a'),/媒体/);
+});
+test('direct writes run with bounded concurrency',async()=>{
+  const pending=[1,2,3,4,5,6];let active=0;let maximum=0;
+  await runPool(2,async()=>pending.shift() ?? null,async()=>{
+    active++;maximum=Math.max(maximum,active);
+    await new Promise(resolve=>setTimeout(resolve,5));
+    active--;
+  });
+  assert.equal(maximum,2);
+  assert.equal(pending.length,0);
 });

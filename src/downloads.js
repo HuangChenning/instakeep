@@ -110,6 +110,16 @@ export async function retryFailed(taskId) {
     await updateItem(item.id,{state:'pending',downloadId:null,attempts:0,nextRetryAt:0,error:null});
   }
 }
+export async function runPool(limit,claim,work) {
+  if(!Number.isInteger(limit) || limit<0)throw new Error('并行下载数量无效。');
+  await Promise.all(Array.from({length:limit},async()=>{
+    for(;;) {
+      const item=await claim();
+      if(!item)return;
+      await work(item);
+    }
+  }));
+}
 export async function pump(taskId,refreshMedia) {
   if(active.has(taskId))return;
   active.add(taskId);
@@ -117,13 +127,12 @@ export async function pump(taskId,refreshMedia) {
     await reconcile(taskId);
     const items=await loadItems(taskId);
     const slots=2-items.filter(item=>['starting','downloading'].includes(item.state)).length;
-    for(let count=0;count<((await loadTask(taskId)).destination ? Infinity:slots);count++) {
-      const item=await claimNext(taskId);
-      if(!item)break;
+    const limit=(await loadTask(taskId)).destination ? 2:Math.max(0,slots);
+    await runPool(limit,()=>claimNext(taskId),async item=>{
       try {
         const task=await loadTask(taskId);
         const media=item.type==='media'?await refreshMedia(task.context,item.contentId,item.media.id):null;
-        if((await loadTask(taskId)).state==='paused') {await updateItem(item.id,{state:'pending'});break;}
+        if((await loadTask(taskId)).state==='paused') {await updateItem(item.id,{state:'pending'});return;}
         await startDownload(item,media?.url);
       } catch(error) {
         const fresh=(await loadItems(taskId)).find(value=>value.id===item.id);
@@ -134,6 +143,6 @@ export async function pump(taskId,refreshMedia) {
         if(error.name==='NotAllowedError' || error.message.includes('保存目录页面'))await pauseTask(taskId,'保存目录写入权限失效，请重新授权后恢复。');
         if(['LOGIN_REQUIRED','RATE_LIMITED','CONTEXT_CHANGED'].includes(error.code)) await pauseTask(taskId,'登录、访问限制或主页上下文发生变化。');
       }
-    }
+    });
   } finally {active.delete(taskId);}
 }

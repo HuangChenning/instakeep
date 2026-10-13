@@ -16,7 +16,7 @@ Chrome 扩展测试版。它使用浏览器里已经登录的 Instagram，把主
 
 ## 验证效果
 
-`npm test` 当前 44 项通过，0 失败，0 跳过。
+`npm test` 当前 45 项通过，0 失败，0 跳过。
 
 独立浏览器脚本覆盖了目录句柄、写入后确认成功、重名保留、队列在浏览器重启后仍在、暂停与恢复，以及帖子按钮只出现在帖子页。脚本是 `scripts/destination-check.mjs`、`scripts/browser-check.mjs` 和 `scripts/post-download-check.mjs`。
 

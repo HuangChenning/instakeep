@@ -16,7 +16,7 @@ A Chrome extension preview. It uses the Instagram session already open in the br
 
 ## Verified results
 
-`npm test` currently passes 44 tests, with 0 failures and 0 skipped.
+`npm test` currently passes 45 tests, with 0 failures and 0 skipped.
 
 Separate browser scripts cover the folder handle, a write that is confirmed only after the file is closed, keeping same-name files, a queue that survives a browser restart, pause and resume, and a post button that appears only on a post. The scripts are `scripts/destination-check.mjs`, `scripts/browser-check.mjs`, and `scripts/post-download-check.mjs`.
 
