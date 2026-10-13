@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="440" viewBox="0 0 1200 440" role="img" aria-labelledby="title desc">
+  <title id="title">InstaKeep</title>
+  <desc id="desc">A Chrome extension that writes images, video, carousel items, and a source JSON file from an open Instagram profile or post into a folder you choose.</desc>
+  <defs>
+    <clipPath id="frame">
+      <rect width="1200" height="440" rx="28"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#frame)">
+    <rect width="1200" height="440" fill="#F6F8F3"/>
+    <rect width="12" height="440" fill="#215444"/>
+
+    <g id="title-block" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif">
+      <text x="64" y="78" fill="#4A5C52" font-size="18" font-weight="600" letter-spacing="1.2">CHROME EXTENSION · LOCAL FOLDER</text>
+      <text x="64" y="158" fill="#182825" font-size="64" font-weight="700" letter-spacing="-1.4">InstaKeep</text>
+      <text x="64" y="200" fill="#215444" font-size="24" font-weight="600">IG 留存</text>
+      <text x="64" y="252" fill="#182825" font-size="22">Save posts from the open profile, or every</text>
+      <text x="64" y="284" fill="#182825" font-size="22">image, video, and carousel item in this post,</text>
+      <text x="64" y="316" fill="#182825" font-size="22">into a folder you choose.</text>
+      <text x="64" y="368" fill="#4A5C52" font-size="18" font-weight="600">Images · video · carousel · source JSON</text>
+    </g>
+
+    <g id="folder-proof" transform="translate(688 48)">
+      <rect x="28" y="0" width="228" height="42" rx="12" fill="#215444"/>
+      <rect x="214" y="8" width="16" height="24" rx="3" fill="#D7A956"/>
+      <text x="44" y="27" fill="#F6F8F3" font-size="18" font-weight="650" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif">Chosen folder</text>
+      <rect x="0" y="28" width="448" height="316" rx="20" fill="#FFFFFF" stroke="#215444" stroke-width="1.5"/>
+
+      <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="18">
+        <rect x="24" y="52" width="400" height="52" rx="8" fill="#F6F8F3"/>
+        <text x="40" y="84" fill="#182825">{date}_{id}_01.jpg</text>
+        <text x="338" y="84" fill="#4A5C52" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="18">Image</text>
+
+        <rect x="24" y="116" width="400" height="52" rx="8" fill="#F6F8F3"/>
+        <text x="40" y="148" fill="#182825">{date}_{id}_02.jpg</text>
+        <text x="338" y="148" fill="#4A5C52" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="18">Image</text>
+
+        <rect x="24" y="180" width="400" height="52" rx="8" fill="#F6F8F3"/>
+        <text x="40" y="212" fill="#182825">{date}_{id}_03.jpg</text>
+        <text x="338" y="212" fill="#4A5C52" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="18">Image</text>
+      </g>
+
+      <rect x="24" y="248" width="400" height="72" rx="8" fill="#E7EFE8" stroke="#215444" stroke-width="1.5"/>
+      <text x="40" y="278" fill="#182825" font-size="18" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">{date}_{id}.json</text>
+      <text x="40" y="302" fill="#215444" font-size="18" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif">Source: link, caption, media list</text>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,5 @@
+:root{font:14px/1.65 system-ui,sans-serif;color:#182825;background:#f6f8f3}body{margin:0;width:360px}main{padding:24px}h1{font-size:26px;letter-spacing:-1px;margin:8px 0}h1 span{font-size:14px;font-weight:400;letter-spacing:0}.label{font-size:10px;letter-spacing:2px;color:#627569}button{width:100%;padding:12px;border:0;border-radius:9px;background:#215444;color:white;font:inherit;cursor:pointer}button:disabled{opacity:.6}button:focus-visible{outline:3px solid #d7a956;outline-offset:3px}#result{min-height:72px;overflow-wrap:anywhere}.note{font-size:12px;color:#657468}hr{border:0;border-top:1px solid #d8e0d4}
+#evidence{white-space:pre-wrap;overflow-wrap:anywhere;font-size:11px;max-height:300px;overflow:auto}summary{cursor:pointer}
+
+fieldset{border:1px solid #d8e0d4;margin:12px 0}label{display:block;margin:8px 0}input:not([type=checkbox]){box-sizing:border-box;width:100%;padding:7px;font:inherit}button{margin:4px 0}#job-status{white-space:pre-wrap;font:12px/1.7 system-ui;overflow-wrap:anywhere}#job-message{color:#8c3d2f}
+#saved-files{white-space:pre-wrap;overflow-wrap:anywhere;font-size:11px}

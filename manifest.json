@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "InstaKeep · IG 留存",
+  "version": "0.1.0",
+  "description": "Instagram 帖子批量及单帖本机备份测试版，支持持久队列与恢复。",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "downloads",
+    "storage",
+    "alarms"
+  ],
+  "host_permissions": [
+    "https://*.cdninstagram.com/*",
+    "https://*.fbcdn.net/*",
+    "https://www.instagram.com/*",
+    "https://instagram.com/*"
+  ],
+  "background": {
+    "service_worker": "src/background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "ui/popup.html",
+    "default_title": "InstaKeep · IG 留存"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.instagram.com/*",
+        "https://instagram.com/*"
+      ],
+      "js": [
+        "src/post-button.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}

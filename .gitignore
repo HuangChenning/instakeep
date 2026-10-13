@@ -1,0 +1,10 @@
+node_modules/
+.superpowers/
+.DS_Store
+coverage/
+*.log
+local-validation/
+downloads/
+
+# 含本机路径、账号名和具体帖子标识的验收流水，仅留在本地
+docs/progress.md
