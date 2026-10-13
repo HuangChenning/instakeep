@@ -29,7 +29,9 @@
       document.querySelectorAll(`${selector},[data-instakeep-status]`).forEach(element=>element.remove());return;
     }
     const rows=new Set(targets.map(target=>target.row));
-    document.querySelectorAll(selector).forEach(button=>{if(!rows.has(button.parentElement))button.remove();});
+    document.querySelectorAll(selector).forEach(button=>{
+      if(![...rows].some(row=>row.contains(button)))button.remove();
+    });
     document.querySelectorAll('[data-instakeep-status]').forEach(notice=>{
       if(!notice.previousElementSibling?.querySelector?.(selector))notice.remove();
     });
