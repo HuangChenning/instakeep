@@ -15,7 +15,6 @@ try {
   await inspector.evaluate(async()=>{
     const {saveDestination}=await import('../src/destination.js');
     await saveDestination(await (await navigator.storage.getDirectory()).getDirectoryHandle('backup',{create:true}));
-    await chrome.storage.local.set({appId:'12345'});
   });
   await worker.evaluate(()=>{globalThis.popupCalls=0;chrome.runtime.onMessage.addListener((message,sender)=>{if(message.type==='START_POST_IMAGES')globalThis.lastSender={url:sender.url,tab:sender.tab?.url,origin:sender.origin,frameId:sender.frameId};});chrome.action.openPopup=async()=>{globalThis.popupCalls++;};});
   await context.addCookies([{name:'ds_user_id',value:'200',domain:'.instagram.com',path:'/',secure:true}]);
@@ -35,9 +34,11 @@ try {
   },post);
   await context.route('https://**/*',route=>{
     const url=new URL(route.request().url());
-    if(url.pathname.includes('/api/v1/media/'))return route.fulfill({contentType:'application/json',body:JSON.stringify({items:[post]})});
+    if(url.pathname.includes('/api/v1/media/'))return route.request().headers()['x-ig-app-id']==='936619743392459'
+      ? route.fulfill({contentType:'application/json',body:JSON.stringify({items:[post]})})
+      : route.fulfill({status:400,contentType:'application/json',body:JSON.stringify({message:'missing public app id'})});
     if(url.hostname.endsWith('cdninstagram.com'))return route.fulfill({contentType:'image/jpeg',body:Buffer.from([255,216,255,217])});
-    if(url.hostname==='www.instagram.com')return route.fulfill({contentType:'text/html; charset=utf-8',body:'<!doctype html><meta charset="utf-8"><main><section><button><svg aria-label="评论"></svg></button><button><svg aria-label="收藏"></svg></button></section></main>'});
+    if(url.hostname==='www.instagram.com')return route.fulfill({contentType:'text/html; charset=utf-8',body:'<!doctype html><meta charset="utf-8"><script type="application/json">["JSErrorLoggingConfig",[],{"appId":936619743392459}]</script><main><section><button><svg aria-label="评论"></svg></button><button><svg aria-label="收藏"></svg></button></section></main>'});
     return route.continue();
   });
   const page=await context.newPage();await page.goto('https://www.instagram.com/example/');

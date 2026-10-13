@@ -41,9 +41,11 @@ test('detail refresh accepts only the requested media identity',async()=>{
 test('a single post is identified from its shortcode and keeps every carousel item for normalization',async()=>{
   const {run,sandbox,calls}=harness({items:[{pk:'300',code:'Es',media_type:8,carousel_media_count:2,
     user:{pk:'100',username:'example'},carousel_media:[{pk:'301'},{pk:'302'}],sessionid:'secret'}]});
+  sandbox.document.scripts=[{textContent:'[\"JSErrorLoggingConfig\",[],{\"appId\":936619743392459}]'}];
   sandbox.location.pathname='/p/Es/';
   const result=await run({category:'posts',single:true});
   assert.equal(calls[0][0],'/api/v1/media/300/info/');
+  assert.equal(calls[0][1].headers['X-IG-App-ID'],'936619743392459');
   assert.equal(result.context.postCode,'Es');
   assert.equal(result.context.accountId,'100');
   assert.equal(result.detail.carousel_media.length,2);

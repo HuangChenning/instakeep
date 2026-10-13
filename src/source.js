@@ -4,6 +4,8 @@ export async function readSource(input) {
   let context=input.context;
   const fail=(code,error)=>({code,error});
   const viewer=()=>document.cookie.match(/(?:^|;\s*)ds_user_id=(\d+)(?:;|$)/)?.[1];
+  const publicAppId=/^\d{6,30}$/.test(appId ?? '') ? appId
+    : [...(document.scripts ?? [])].map(script=>script.textContent?.match(/"appId":(\d{6,30})/)?.[1]).find(Boolean);
   const initialPath=location.pathname;
   const postCode=initialPath.match(/^\/(?:[a-zA-Z0-9._]{1,30}\/)?(?:p|reel)\/([a-zA-Z0-9_-]{1,30})\/?$/)?.[1];
   const singleViewer=viewer();
@@ -25,7 +27,7 @@ export async function readSource(input) {
     if(!validContext())throw fail('CONTEXT_CHANGED','主页或登录账号已变化。');
     const csrf=document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/)?.[1];
     const response=await fetch(path,{...options,credentials:'same-origin',headers:{...options.headers,
-      ...(/^\d{1,30}$/.test(appId ?? '') ? {'X-IG-App-ID':appId}:{}),...(csrf ? {'X-CSRFToken':csrf}:{})}});
+      ...(publicAppId ? {'X-IG-App-ID':publicAppId}:{}),...(csrf ? {'X-CSRFToken':csrf}:{})}});
     if(response.status===429)throw fail('RATE_LIMITED','Instagram 限制访问，请稍后手动恢复。');
     if([401,403].includes(response.status))throw fail('LOGIN_REQUIRED','访问被拒绝，请检查登录状态。');
     if(!response.ok || (response.url && new URL(response.url,location.href).origin!==location.origin))throw fail('READ_FAILED',`Instagram ${path.includes('/media/') ? '媒体详情':'列表'}读取失败（HTTP ${response.status}）。`);
