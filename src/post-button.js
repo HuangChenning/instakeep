@@ -14,6 +14,10 @@
     }
     return null;
   }
+  function shareAction(row) {
+    const icon=row.querySelector('svg[aria-label="分享帖子"],svg[aria-label="分享"],svg[aria-label="Share Post"],svg[aria-label="Share"]');
+    return icon?.closest('button,[role="button"]') ?? icon?.parentElement ?? null;
+  }
   function mount() {
     scheduled=false;
     const detailPath=isPostPath(location.pathname) ? location.pathname:null;
@@ -32,6 +36,7 @@
     for(const target of targets) {
       const {row}=target;
       if(row.querySelector(selector))continue;
+    const share=shareAction(row);
     const button=document.createElement('button');
     button.type='button';button.dataset.instakeepDownload='';
     button.dataset.instakeepPostPath=target.postPath;
@@ -77,7 +82,8 @@
         }
       }
     });
-    row.append(button);row.after(notice);
+    if(share)share.after(button);else row.append(button);
+    row.after(notice);
     }
   }
   const observer=new MutationObserver(()=>{

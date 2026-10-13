@@ -38,7 +38,7 @@ try {
       ? route.fulfill({contentType:'application/json',body:JSON.stringify({items:[post]})})
       : route.fulfill({status:400,contentType:'application/json',body:JSON.stringify({message:'missing public app id'})});
     if(url.hostname.endsWith('cdninstagram.com'))return route.fulfill({contentType:'image/jpeg',body:Buffer.from([255,216,255,217])});
-    if(url.hostname==='www.instagram.com')return route.fulfill({contentType:'text/html; charset=utf-8',body:`<!doctype html><meta charset="utf-8"><script type="application/json">["JSErrorLoggingConfig",[],{"appId":936619743392459}]</script><main><article><a href="/p/${code}/">post</a><section><button><svg aria-label="评论"></svg></button><button><svg aria-label="收藏"></svg></button></section></article></main>`});
+    if(url.hostname==='www.instagram.com')return route.fulfill({contentType:'text/html; charset=utf-8',body:`<!doctype html><meta charset="utf-8"><script type="application/json">["JSErrorLoggingConfig",[],{"appId":936619743392459}]</script><main><article><a href="/p/${code}/">post</a><section><button><svg aria-label="评论"></svg></button><button><svg aria-label="分享帖子"></svg></button><button><svg aria-label="收藏"></svg></button></section></article></main>`});
     return route.continue();
   });
   const page=await context.newPage();await page.goto('https://www.instagram.com/example/');

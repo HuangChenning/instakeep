@@ -12,7 +12,7 @@ try {
   const worker=context.serviceWorkers()[0] ?? await context.waitForEvent('serviceworker');
   const origin=`chrome-extension://${new URL(worker.url()).host}`;
   const page=await context.newPage();await page.goto(`${origin}/ui/destination.html`);
-  const article=code=>`<article><a href="/p/${code}/">post</a><section><button><svg aria-label="评论"></svg></button><button><svg aria-label="收藏"></svg></button></section></article>`;
+  const article=code=>`<article><a href="/p/${code}/">post</a><section><button><svg aria-label="评论"></svg></button><button><svg aria-label="分享帖子"></svg></button><button><svg aria-label="收藏"></svg></button></section></article>`;
   await page.route('https://www.instagram.com/**',route=>route.fulfill({contentType:'text/html',
     body:`<!doctype html><meta charset="utf-8"><main>${article('FeedOne')}${article('FeedTwo')}</main>`}));
   await page.goto('https://www.instagram.com/example/p/TestPost/');
@@ -26,7 +26,8 @@ try {
   await page.locator('[data-instakeep-download]').nth(1).waitFor({timeout:5000});
   if(JSON.stringify(await page.locator('[data-instakeep-download]').evaluateAll(buttons=>buttons.map(button=>button.dataset.instakeepPostPath)))
       !==JSON.stringify(['/p/FeedOne/','/p/FeedTwo/']))throw new Error('feed buttons are not bound to their own posts');
-  await page.evaluate(()=>document.querySelector('main').insertAdjacentHTML('beforeend','<article><a href="/p/FeedThree/">post</a><section><button><svg aria-label="评论"></svg></button><button><svg aria-label="收藏"></svg></button></section></article>'));
+  if(!await page.locator('[data-instakeep-download]').evaluateAll(buttons=>buttons.every(button=>button.previousElementSibling?.querySelector('svg[aria-label="分享帖子"]'))))throw new Error('download button is not immediately after share');
+  await page.evaluate(()=>document.querySelector('main').insertAdjacentHTML('beforeend','<article><a href="/p/FeedThree/">post</a><section><button><svg aria-label="评论"></svg></button><button><svg aria-label="分享帖子"></svg></button><button><svg aria-label="收藏"></svg></button></section></article>'));
   await page.locator('[data-instakeep-download]').nth(2).waitFor({timeout:5000});
   if(await page.locator('[data-instakeep-download]').count()!==3)throw new Error('infinite feed insertion duplicated or missed buttons');
   console.log('PASS: detail and home-feed buttons mount once, bind each permalink, survive rerenders and disappear elsewhere');
