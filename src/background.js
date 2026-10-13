@@ -21,12 +21,14 @@ chrome.runtime.onMessage.addListener((message, sender, respond) => {
         || JSON.stringify(message).length>150)return;
     (async()=>{
       const tab=await chrome.tabs.get(sender.tab.id);
-      if(!/^https:\/\/(?:www\.)?instagram\.com\/(?:[A-Za-z0-9_.]+\/)?p\/[A-Za-z0-9_-]+\/?(?:[?#].*)?$/.test(tab.url ?? ''))throw new Error('请先打开要下载的帖子。');
+      if(!/^https:\/\/(?:www\.)?instagram\.com\//.test(tab.url ?? ''))throw new Error('请先打开 Instagram。');
       if(message.type==='OPEN_DESTINATION') {
         await chrome.tabs.create({url:chrome.runtime.getURL('ui/destination.html')});return {};
       }
       if(message.type==='GET_POST_STATUS')return postStatus(message.taskId,tab.id);
-      return {id:await startTask(tab.id,['posts'],false,true,true)};
+      const postPath=message.postPath ?? new URL(tab.url).pathname;
+      if(!/^\/(?:[A-Za-z0-9_.]+\/)?p\/[A-Za-z0-9_-]+\/?$/.test(postPath))throw new Error('帖子地址无效。');
+      return {id:await startTask(tab.id,['posts'],false,true,true,postPath)};
     })().then(data=>respond({ok:true,data})).catch(error=>respond({ok:false,error:error.message,code:error.code}));
     return true;
   }

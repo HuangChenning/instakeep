@@ -1,17 +1,19 @@
 // Serialized into Instagram's page; authentication is used only for this same-origin request.
 export async function readSource(input) {
-  const {category,query,cursor=null,contentId=null,appId=null,single=false}=input;
+  const {category,query,cursor=null,contentId=null,appId=null,single=false,singlePath=null}=input;
   let context=input.context;
   const fail=(code,error)=>({code,error});
   const viewer=()=>document.cookie.match(/(?:^|;\s*)ds_user_id=(\d+)(?:;|$)/)?.[1];
   const publicAppId=/^\d{6,30}$/.test(appId ?? '') ? appId
     : [...(document.scripts ?? [])].map(script=>script.textContent?.match(/"appId":(\d{6,30})/)?.[1]).find(Boolean);
   const initialPath=location.pathname;
-  const postCode=initialPath.match(/^\/(?:[a-zA-Z0-9._]{1,30}\/)?(?:p|reel)\/([a-zA-Z0-9_-]{1,30})\/?$/)?.[1];
+  const postPath=singlePath ?? initialPath;
+  const postCode=typeof postPath==='string'
+    ? postPath.match(/^\/(?:[a-zA-Z0-9._]{1,30}\/)?(?:p|reel)\/([a-zA-Z0-9_-]{1,30})\/?$/)?.[1]:null;
   const singleViewer=viewer();
   const validContext=()=>location.protocol==='https:' && ['www.instagram.com','instagram.com'].includes(location.hostname)
     && (single ? Boolean(postCode && singleViewer && location.pathname===initialPath && viewer()===singleViewer)
-      :Boolean(context && (context.postCode ? location.pathname===context.postPath
+      :Boolean(context && (context.postCode ? location.pathname===(context.sourcePath ?? context.postPath)
         :[`/${context.username}/`,`/${context.username}/reels/`].includes(location.pathname)) && viewer()===context.viewerId));
   if(!['posts','reels'].includes(category) || (!single && (!/^\d+$/.test(context?.accountId) || !/^\d+$/.test(context?.viewerId)
       || !/^[a-zA-Z0-9._]{1,30}$/.test(context?.username))) || !validContext())return fail('CONTEXT_CHANGED','主页、帖子或登录账号已变化。');
@@ -50,7 +52,7 @@ export async function readSource(input) {
       const accountId=String(media.user?.pk ?? media.user?.id ?? '');
       const username=media.user?.username;
       if(media.code!==postCode || !/^\d+$/.test(accountId) || !/^[a-zA-Z0-9._]{1,30}$/.test(username ?? ''))return fail('READ_FAILED','帖子身份未确认。');
-      context={accountId,username,viewerId:singleViewer,postCode,postPath:initialPath};
+      context={accountId,username,viewerId:singleViewer,postCode,postPath,sourcePath:initialPath};
       return {detail:media,context,category};
     }
     if(contentId)return {detail:await detail(contentId),context,category};

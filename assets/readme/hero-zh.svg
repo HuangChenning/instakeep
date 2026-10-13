@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="440" viewBox="0 0 1200 440" role="img" aria-labelledby="title desc">
   <title id="title">InstaKeep · IG 留存</title>
-  <desc id="desc">Chrome 扩展把已打开的 Instagram 主页帖子，或当前帖子的图片、视频、轮播和来源 JSON，直接写入选定文件夹。</desc>
+  <desc id="desc">Chrome 扩展把已打开的 Instagram 主页帖子，或当前帖子的图片、视频和轮播，直接写入选定文件夹。</desc>
   <defs>
     <clipPath id="frame">
       <rect width="1200" height="440" rx="28"/>
@@ -16,7 +16,7 @@
       <text x="64" y="208" fill="#215444" font-size="28" font-weight="600">IG 留存</text>
       <text x="64" y="268" fill="#182825" font-size="22">把打开的主页帖子，或当前这一条帖子，</text>
       <text x="64" y="302" fill="#182825" font-size="22">写入你选定的文件夹。</text>
-      <text x="64" y="364" fill="#4A5C52" font-size="18" font-weight="600">图片 · 视频 · 轮播 · 来源 JSON</text>
+      <text x="64" y="364" fill="#4A5C52" font-size="18" font-weight="600">图片 · 视频 · 轮播 · 本机文件夹</text>
     </g>
 
     <g id="folder-proof" transform="translate(688 48)">
@@ -40,8 +40,8 @@
       </g>
 
       <rect x="24" y="248" width="400" height="72" rx="8" fill="#E7EFE8" stroke="#215444" stroke-width="1.5"/>
-      <text x="40" y="278" fill="#182825" font-size="18" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">{date}_{id}.json</text>
-      <text x="40" y="302" fill="#215444" font-size="18" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif">来源：原帖、文案、媒体清单</text>
+      <text x="40" y="278" fill="#182825" font-size="18" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">{date}_{id}_04.mp4</text>
+      <text x="40" y="302" fill="#215444" font-size="18" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif">视频</text>
     </g>
   </g>
 </svg>

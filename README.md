@@ -1,6 +1,6 @@
 [中文](README.zh-CN.md)
 
-<img src="./assets/readme/hero-en.svg" width="100%" alt="InstaKeep writes images, video, carousel items, and a source JSON file from an open Instagram post into a folder you choose">
+<img src="./assets/readme/hero-en.svg" width="100%" alt="InstaKeep writes images, video, and carousel items from an open Instagram post into a folder you choose">
 
 # InstaKeep
 
@@ -9,18 +9,17 @@ A Chrome extension preview. It uses the Instagram session already open in the br
 ## What it does
 
 - Save the posts on the open profile: images, video, and every carousel item.
-- The post action labeled “InstaKeep · 下载全部图片” saves every image in that post and shows progress, success, or the failure reason beside the post.
+- On the home feed and post detail pages, “InstaKeep · 下载全部图片” saves every image from that specific post and shows progress, success, or the failure reason beside it.
 - Video inside a mixed carousel is saved from the popup action “下载当前帖子的全部内容”.
-- A source JSON file is on by default: post URL, account, publish time when Instagram provides it, caption, and the media list. You can turn it off.
 - The default filename is `{date}_{id}_{index}`: date, content id, and carousel index. Files land in the chosen folder itself. A subfolder is created only when you set one. An existing file with the same name is kept.
 
 ## Verified results
 
-`npm test` currently passes 45 tests, with 0 failures and 0 skipped.
+`npm test` currently passes 49 tests, with 0 failures and 0 skipped.
 
-Separate browser scripts cover the folder handle, a write that is confirmed only after the file is closed, keeping same-name files, a queue that survives a browser restart, pause and resume, and a post button that appears only on a post. The scripts are `scripts/destination-check.mjs`, `scripts/browser-check.mjs`, and `scripts/post-download-check.mjs`.
+Separate browser scripts cover the folder handle, a write that is confirmed only after the file is closed, keeping same-name files, a queue that survives a browser restart, pause and resume, and post buttons bound to their own home-feed or detail post. The scripts are `scripts/destination-check.mjs`, `scripts/browser-check.mjs`, and `scripts/post-download-check.mjs`.
 
-In real Chrome, opening a post from a profile and using the page button wrote that post’s images and source JSON into the chosen folder without opening the settings popup. A full profile backup, and whether a real video plays with audio, are not verified yet. The record is in [docs/validation.md](docs/validation.md) (Chinese).
+In real Chrome, opening a post from a profile and using the page button wrote that post’s images into the chosen folder without opening the settings popup. A full profile backup, and whether a real video plays with audio, are not verified yet. The record is in [docs/validation.md](docs/validation.md) (Chinese).
 
 ## How it works
 

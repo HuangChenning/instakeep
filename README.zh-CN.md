@@ -1,6 +1,6 @@
 [English](README.md)
 
-<img src="./assets/readme/hero-zh.svg" width="100%" alt="InstaKeep 把已打开的 Instagram 帖子图片、视频、轮播和来源 JSON 写入你选定的文件夹">
+<img src="./assets/readme/hero-zh.svg" width="100%" alt="InstaKeep 把已打开的 Instagram 帖子图片、视频和轮播写入你选定的文件夹">
 
 # InstaKeep · IG 留存
 
@@ -11,7 +11,6 @@ Chrome 扩展测试版。它使用浏览器里已经登录的 Instagram，把主
 - 批量保存当前主页里的帖子：图片、视频和全部轮播项。
 - 帖子操作栏上的「InstaKeep · 下载全部图片」会保存该帖全部图片，并在帖子旁显示进度、完成或失败原因。
 - 混合轮播里的视频，用弹窗中的「下载当前帖子的全部内容」。
-- 默认再写一条来源 JSON：原帖链接、账号、能取到的发布时间、文案和媒体清单。可以关掉。
 - 默认文件名是 `{date}_{id}_{index}`，例如日期、内容 ID 和轮播序号。文件直接落在所选文件夹；只有你填写子文件夹时才额外建目录。同名文件保留，不覆盖。
 
 ## 验证效果
@@ -20,7 +19,7 @@ Chrome 扩展测试版。它使用浏览器里已经登录的 Instagram，把主
 
 独立浏览器脚本覆盖了目录句柄、写入后确认成功、重名保留、队列在浏览器重启后仍在、暂停与恢复，以及帖子按钮只出现在帖子页。脚本是 `scripts/destination-check.mjs`、`scripts/browser-check.mjs` 和 `scripts/post-download-check.mjs`。
 
-在真实 Chrome 里，从主页打开一条帖子后，页面按钮已把该帖的多张图片和来源 JSON 写入所选目录，且没有打开设置弹窗。完整主页批量，以及真实视频能否播放、是否带声音，还没有验证。记录见 [docs/validation.md](docs/validation.md)。
+在真实 Chrome 里，从主页打开一条帖子后，页面按钮已把该帖的多张图片写入所选目录，且没有打开设置弹窗。完整主页批量，以及真实视频能否播放、是否带声音，还没有验证。记录见 [docs/validation.md](docs/validation.md)。
 
 ## 保存流程
 

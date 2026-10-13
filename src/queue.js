@@ -1,6 +1,5 @@
 import { mediaKey } from './model.js';
 import { buildPath } from './paths.js';
-import { buildMetadata } from './metadata.js';
 export function makeItems(task, contents) {
   return contents.flatMap(content => {
     if (content.accountId !== task.context.accountId) throw new Error('内容账号与任务不匹配。');
@@ -10,11 +9,6 @@ export function makeItems(task, contents) {
       mediaKey:`media|${mediaKey(media)}`,type:'media',media:{id:media.id,index:media.index},
       relativePath:paths[index],state:'pending',downloadId:null,attempts:0,nextRetryAt:0
     }));
-    if (task.settingsSnapshot.metadata) items.push({
-      id:`${task.id}|metadata|${content.id}`,taskId:task.id,contentId:content.id,accountId:content.accountId,
-      mediaKey:`metadata|${content.id}`,type:'metadata',relativePath:paths[0].replace(/\.[^.]+$/,'.json'),
-      payload:buildMetadata(content,paths),state:'pending',downloadId:null,attempts:0,nextRetryAt:0
-    });
     return items;
   });
 }

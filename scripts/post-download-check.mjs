@@ -26,7 +26,7 @@ try {
     const store=await import('../src/store.js');const {normalizeContent}=await import('../src/instagram.js');
     const {requireDestination,writeFile}=await import('../src/destination.js');const destination=await requireDestination();
     const context={accountId:'100',viewerId:'200',username:'example'};
-    const previous=await store.createTask(context,['posts'],{root:'Instagram',folderTemplate:'{username}/{type}',metadata:true});
+    const previous=await store.createTask(context,['posts'],{root:'Instagram',folderTemplate:'{username}/{type}'});
     await store.updateTask(previous.id,{destination});
     await store.saveScanPage(previous.id,'posts',{context,contents:[normalizeContent(post,context,'posts')],nextCursor:null,terminal:true});
     for(;;){const item=await store.claimNext(previous.id);if(!item)break;const body=item.type==='media' ? new Uint8Array([255,216,255,217]):JSON.stringify(item.payload);const path=await writeFile(destination.handle,item.relativePath,body);await store.markFileSucceeded(item.id,path,destination);}
@@ -38,7 +38,7 @@ try {
       ? route.fulfill({contentType:'application/json',body:JSON.stringify({items:[post]})})
       : route.fulfill({status:400,contentType:'application/json',body:JSON.stringify({message:'missing public app id'})});
     if(url.hostname.endsWith('cdninstagram.com'))return route.fulfill({contentType:'image/jpeg',body:Buffer.from([255,216,255,217])});
-    if(url.hostname==='www.instagram.com')return route.fulfill({contentType:'text/html; charset=utf-8',body:'<!doctype html><meta charset="utf-8"><script type="application/json">["JSErrorLoggingConfig",[],{"appId":936619743392459}]</script><main><section><button><svg aria-label="评论"></svg></button><button><svg aria-label="收藏"></svg></button></section></main>'});
+    if(url.hostname==='www.instagram.com')return route.fulfill({contentType:'text/html; charset=utf-8',body:`<!doctype html><meta charset="utf-8"><script type="application/json">["JSErrorLoggingConfig",[],{"appId":936619743392459}]</script><main><article><a href="/p/${code}/">post</a><section><button><svg aria-label="评论"></svg></button><button><svg aria-label="收藏"></svg></button></section></article></main>`});
     return route.continue();
   });
   const page=await context.newPage();await page.goto('https://www.instagram.com/example/');
@@ -67,6 +67,10 @@ try {
     for(const item of items){let dir=task.destination.handle;const parts=item.relativePath.split('/');for(const part of parts.slice(0,-1))dir=await dir.getDirectoryHandle(part);if(!(await (await dir.getFileHandle(parts.at(-1))).getFile()).size)throw new Error('Empty saved file');}
     return 'PASS: real content-script click -> background -> image stream -> files, inline completion and no popup';
   }));
+  await page.evaluate(()=>{history.pushState({},'', '/');window.dispatchEvent(new PopStateEvent('popstate'));});
+  await page.locator('[data-instakeep-download]').click();
+  await page.getByRole('status').filter({hasText:'已有 2 张'}).waitFor({timeout:5000});
+  console.log('PASS: home-feed button binds its post permalink through the background reader');
   await inspector.evaluate(()=>new Promise((resolve,reject)=>{
     const request=indexedDB.open('instakeep-destination',1);
     request.onsuccess=()=>{const db=request.result;const tx=db.transaction('settings','readwrite');tx.objectStore('settings').delete('destination');tx.oncomplete=()=>{db.close();resolve();};tx.onabort=()=>reject(tx.error);};

@@ -118,16 +118,15 @@ export async function claimNext(taskId) {
     const task = await request(tasks.get(taskId));
     if (!task || !['scanning','downloading'].includes(task.state)) return null;
     const list = await request(items.index('taskId').getAll(taskId));
+    for(const legacy of list.filter(item=>item.type==='metadata' && !['succeeded','skipped'].includes(item.state))) {
+      legacy.state='skipped';legacy.error=null;
+      await request(items.put(legacy));
+    }
     const item = list.find(item=>{
       if(item.state!=='pending' || item.nextRetryAt>Date.now())return false;
-      if(item.type!=='metadata')return true;
-      return item.payload.media.every(media=>list.some(candidate=>candidate.mediaKey===`media|${media.id}:${media.index}`
-        && ['succeeded','skipped'].includes(candidate.state)));
+      return item.type!=='metadata';
     });
     if (!item) return null;
-    if(item.type==='metadata')item.payload.media=item.payload.media.map(media=>({...media,
-      path:(list.find(candidate=>candidate.mediaKey===`media|${media.id}:${media.index}`).actualPath
-        ?? list.find(candidate=>candidate.mediaKey===`media|${media.id}:${media.index}`).relativePath)}));
     item.state='starting';item.attempts++;item.startedAt=Date.now();
     await request(items.put(item));
     return item;

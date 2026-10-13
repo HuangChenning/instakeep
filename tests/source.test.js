@@ -56,3 +56,19 @@ test('a different returned shortcode cannot become a successful single-post back
   sandbox.location.pathname='/p/Es/';
   assert.equal((await run({category:'posts',single:true})).code,'READ_FAILED');
 });
+test('a home-feed button binds the request to its own post permalink',async()=>{
+  const {run,sandbox,calls}=harness({items:[{pk:'300',code:'Es',media_type:1,
+    user:{pk:'100',username:'example'},image_versions2:{candidates:[{url:'https://img.cdninstagram.com/a.jpg',width:100,height:100}]}}]});
+  sandbox.location.pathname='/';
+  sandbox.document.scripts=[{textContent:'[\"JSErrorLoggingConfig\",[],{\"appId\":936619743392459}]'}];
+  const result=await run({category:'posts',single:true,singlePath:'/p/Es/'});
+  assert.equal(calls[0][0],'/api/v1/media/300/info/');
+  assert.equal(result.context.postPath,'/p/Es/');
+  assert.equal(result.context.sourcePath,'/');
+});
+test('a feed request rejects invalid post paths before contacting Instagram',async()=>{
+  const {run,sandbox,calls}=harness({});
+  sandbox.location.pathname='/';
+  assert.equal((await run({category:'posts',single:true,singlePath:'https://evil.test/p/Es/'})).code,'CONTEXT_CHANGED');
+  assert.equal(calls.length,0);
+});

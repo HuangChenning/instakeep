@@ -18,25 +18,14 @@ try {
   });
   console.log(await page.evaluate(async()=>{
     const {loadDestination,requireDestination}=await import('../src/destination.js');
-    const store=await import('../src/store.js');const {startDownload}=await import('../src/downloads.js');
+    const store=await import('../src/store.js');
     const destination=await requireDestination(await loadDestination());
     const task=await store.createTask({accountId:'1',viewerId:'2',username:'test'},['posts'],{metadata:true});
     await store.updateTask(task.id,{destination});
-    // Mark the fixture media skipped so this check exercises a real metadata write.
     await store.saveScanPage(task.id,'posts',{context:task.context,contents:[{id:'3',accountId:'1',username:'test',category:'posts',publishedAt:null,permalink:'https://www.instagram.com/p/test/',caption:'test',media:[{id:'4',index:1,kind:'image',extension:'jpg'}]}],nextCursor:null,terminal:true});
-    const media=await store.claimNext(task.id);await store.updateItem(media.id,{state:'skipped'});
-    const claim=await store.claimNext(task.id);if(!claim)throw new Error('missing claim');
-    await startDownload(claim);
-    const saved=(await store.loadItems(task.id)).find(item=>item.type==='metadata');
-    if(saved.state!=='succeeded')throw new Error('write not confirmed');
-    let dir=destination.handle;const parts=saved.relativePath.split('/');
-    for(const part of parts.slice(0,-1))dir=await dir.getDirectoryHandle(part);
-    const original=await (await (await dir.getFileHandle(parts.at(-1))).getFile()).text();
-    await store.updateItem(saved.id,{state:'starting'});await startDownload({...saved,state:'starting'});
-    const second=(await store.loadItems(task.id)).find(item=>item.type==='metadata');
-    if(second.relativePath===saved.relativePath)throw new Error('overwritten');
-    if(original!==await (await (await dir.getFileHandle(parts.at(-1))).getFile()).text())throw new Error('original changed');
-    return 'PASS: directory handle persisted; direct JSON write and no-overwrite confirmed';
+    const items=await store.loadItems(task.id);
+    if(items.length!==1 || items[0].type!=='media' || items.some(item=>item.relativePath.endsWith('.json')))throw new Error('source JSON was queued');
+    return 'PASS: directory handle persisted and new tasks queue media files only';
   }));
   console.log(await page.evaluate(async()=>{
     const store=await import('../src/store.js');
@@ -49,7 +38,7 @@ try {
       media_type:kind==='video'?2:1,...(kind==='video' ? {video_versions:[{url:'https://video.example.fbcdn.net/file.mp4',width:100,height:100}]}:
         {image_versions2:{candidates:[{url:'https://image.example.cdninstagram.com/file.jpg',width:100,height:100}]}})});
     const posts=[post('300','image'),post('301','video')];
-    const task=await store.createTask(context,['posts'],{metadata:true});
+    const task=await store.createTask(context,['posts'],{});
     await store.updateTask(task.id,{tabId:7,destination});
     const originalGet=chrome.tabs.get,originalExecute=chrome.scripting.executeScript,originalFetch=globalThis.fetch;
     let pages=0,requests=0;
@@ -83,13 +72,9 @@ try {
         let directory=destination.handle;const parts=item.relativePath.split('/');
         for(const part of parts.slice(0,-1))directory=await directory.getDirectoryHandle(part);
         const file=await (await directory.getFileHandle(parts.at(-1))).getFile();
-        if(item.type==='media' && file.size!==4)throw new Error('media stream not written');
-        if(item.type==='metadata'){
-          const metadata=JSON.parse(await file.text());
-          if(metadata.media.some(media=>!final.some(candidate=>candidate.type==='media' && candidate.actualPath===media.path)))throw new Error('metadata path mismatch');
-        }
+        if(file.size!==4)throw new Error('media stream not written');
       }
-      const networkTask=await store.createTask(context,['posts'],{metadata:false,force:true});
+      const networkTask=await store.createTask(context,['posts'],{force:true});
       await store.updateTask(networkTask.id,{tabId:7,destination});
       await store.saveScanPage(networkTask.id,'posts',{context,contents:[{id:'300',accountId:'100',username:'batch_test',category:'posts',publishedAt:null,permalink:'https://www.instagram.com/p/test/',caption:'',media:[{id:'300',index:1,kind:'image',extension:'jpg'}]}],nextCursor:null,terminal:true});
       globalThis.fetch=async()=>{throw new TypeError('temporary network loss');};
@@ -102,17 +87,16 @@ try {
       if((await store.loadTask(networkTask.id)).state!=='complete')throw new Error('temporary network failure did not recover');
       const mixed={...post('302','image'),media_type:8,carousel_media_count:2,carousel_media:[post('304','image'),post('305','video')]};
       posts.push(mixed);
-      const imageTask=await store.createTask(context,['posts'],{metadata:true});
+      const imageTask=await store.createTask(context,['posts'],{});
       await store.updateTask(imageTask.id,{tabId:7,destination,singleContentId:'302',imagesOnly:true});
       await runTask(imageTask.id);
       const imageItems=await store.loadItems(imageTask.id);
       if((await store.loadTask(imageTask.id)).state!=='complete' || imageItems.filter(item=>item.type==='media').length!==1 || imageItems.some(item=>item.relativePath.endsWith('.mp4')))throw new Error('image-only button included carousel video');
-      if(imageItems.find(item=>item.type==='metadata').payload.media.length!==1)throw new Error('image-only metadata listed excluded media');
-      const repeat=await store.createTask(context,['posts'],{metadata:true});
+      const repeat=await store.createTask(context,['posts'],{});
       await store.updateTask(repeat.id,{destination});
       await store.saveScanPage(repeat.id,'posts',{context,contents:posts.slice(0,2).map(post=>({id:post.pk,accountId:'100',username:'batch_test',category:'posts',publishedAt:null,permalink:'https://www.instagram.com/p/test/',caption:'',media:[{id:post.pk,index:1,kind:post.media_type===2?'video':'image',extension:post.media_type===2?'mp4':'jpg'}]})),nextCursor:null,terminal:true});
       if((await store.loadItems(repeat.id)).some(item=>item.state!=='skipped'))throw new Error('completed directory not deduplicated');
-      return 'PASS: two-page batch, image/video streaming, pause/resume, frozen destination, metadata paths and same-directory deduplication';
+      return 'PASS: two-page batch, image/video streaming, pause/resume, frozen destination, no source JSON and same-directory deduplication';
     }finally{chrome.tabs.get=originalGet;chrome.scripting.executeScript=originalExecute;globalThis.fetch=originalFetch;}
   }));
   console.log(await worker.evaluate(async()=>{const dir=await (await navigator.storage.getDirectory()).getDirectoryHandle('test');if(await dir.queryPermission({mode:'readwrite'})!=='granted')throw new Error('worker permission');return 'PASS: service worker can access directory handle and write permission';}));

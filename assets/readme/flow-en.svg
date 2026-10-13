@@ -22,7 +22,7 @@
     <text x="886" y="70" fill="#F6F8F3" font-size="18" font-weight="650">Chosen folder</text>
     <text x="876" y="132" fill="#4A5C52" font-size="18" font-weight="700" letter-spacing="1.2">03</text>
     <text x="876" y="176" fill="#182825" font-size="28" font-weight="700">Direct write</text>
-    <text x="876" y="218" fill="#182825" font-size="20">Media and source JSON</text>
+    <text x="876" y="218" fill="#182825" font-size="20">Images, video, carousel</text>
     <text x="876" y="256" fill="#4A5C52" font-size="18">Same names are kept</text>
   </g>
 </svg>

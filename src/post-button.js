@@ -1,21 +1,40 @@
 (() => {
   const selector='[data-instakeep-download]';
   let scheduled=false;
-  function mount() {
-    scheduled=false;
-    if(!/^\/(?:[A-Za-z0-9_.]+\/)?p\/[A-Za-z0-9_-]+\/?$/.test(location.pathname)) {
-      document.querySelectorAll(`${selector},[data-instakeep-status]`).forEach(element=>element.remove());return;
-    }
-    const action=document.querySelector('svg[aria-label="评论"],svg[aria-label="Comment"]');
-    if(!action)return;
+  const isPostPath=value=>/^\/(?:[A-Za-z0-9_.]+\/)?p\/[A-Za-z0-9_-]+\/?$/.test(value ?? '');
+  const postPath=article=>[...article.querySelectorAll('a[href]')].map(link=>{
+    try{return new URL(link.getAttribute('href'),location.href).pathname;}catch{return null;}
+  }).find(isPostPath);
+  function actionRow(scope) {
+    const action=scope.querySelector('svg[aria-label="评论"],svg[aria-label="Comment"]');
+    if(!action)return null;
     let row=action.parentElement;
     for(let depth=0;row && depth<6;depth++,row=row.parentElement) {
-      if(row.querySelector('svg[aria-label="收藏"],svg[aria-label="Save"]'))break;
+      if(row.querySelector('svg[aria-label="收藏"],svg[aria-label="Save"]'))return row;
     }
-    if(!row || row.querySelector(selector))return;
-    document.querySelectorAll(`${selector},[data-instakeep-status]`).forEach(element=>element.remove());
+    return null;
+  }
+  function mount() {
+    scheduled=false;
+    const detailPath=isPostPath(location.pathname) ? location.pathname:null;
+    const targets=(detailPath ? [{row:actionRow(document),postPath:detailPath}]
+      : location.pathname!=='/' ? []
+      : [...document.querySelectorAll('article')].map(article=>({row:actionRow(article),postPath:postPath(article)}))
+      ).filter(target=>target.row && target.postPath);
+    if(!targets.length) {
+      document.querySelectorAll(`${selector},[data-instakeep-status]`).forEach(element=>element.remove());return;
+    }
+    const rows=new Set(targets.map(target=>target.row));
+    document.querySelectorAll(selector).forEach(button=>{if(!rows.has(button.parentElement))button.remove();});
+    document.querySelectorAll('[data-instakeep-status]').forEach(notice=>{
+      if(!notice.previousElementSibling?.querySelector?.(selector))notice.remove();
+    });
+    for(const target of targets) {
+      const {row}=target;
+      if(row.querySelector(selector))continue;
     const button=document.createElement('button');
     button.type='button';button.dataset.instakeepDownload='';
+    button.dataset.instakeepPostPath=target.postPath;
     button.style.cssText='border:0;background:transparent;color:inherit;cursor:pointer;padding:8px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;';
     button.innerHTML='<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M4 15v5h16v-5"/></svg>';
     const label=text=>{button.title=`InstaKeep · ${text}`;button.setAttribute('aria-label',button.title);};
@@ -26,13 +45,13 @@
     const notify=text=>{label(text);notice.textContent=`InstaKeep：${text}`;};
     button.addEventListener('click',async event=>{
       if(!event.isTrusted)return;
-      const postPath=location.pathname;
+      const sourcePath=location.pathname;
       button.disabled=true;notify('正在读取全部图片…');
       try {
-        const response=await chrome.runtime.sendMessage({type:'START_POST_IMAGES'});
+        const response=await chrome.runtime.sendMessage({type:'START_POST_IMAGES',postPath:target.postPath});
         if(!response?.ok)throw Object.assign(new Error(response?.error ?? '扩展未响应，请刷新帖子后重试。'),{code:response?.code});
         const poll=async()=>{
-          if(!button.isConnected || location.pathname!==postPath)return;
+          if(!button.isConnected || location.pathname!==sourcePath)return;
           const response=await chrome.runtime.sendMessage({type:'GET_POST_STATUS',taskId:responseId});
           if(!response?.ok)throw new Error(response?.error ?? '无法读取下载进度。');
           const status=response.data;
@@ -49,7 +68,7 @@
         const responseId=response.data.id;
         await poll();
       }catch(error){
-        if(!button.isConnected || location.pathname!==postPath)return;
+        if(!button.isConnected || location.pathname!==sourcePath)return;
         notify(error.message);button.disabled=false;
         if(error.code==='DESTINATION_REQUIRED') {
           const authorize=document.createElement('button');authorize.type='button';authorize.textContent='选择或授权保存目录';
@@ -59,6 +78,7 @@
       }
     });
     row.append(button);row.after(notice);
+    }
   }
   const observer=new MutationObserver(()=>{
     if(scheduled)return;scheduled=true;requestAnimationFrame(mount);

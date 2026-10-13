@@ -22,7 +22,7 @@
     <text x="888" y="70" fill="#F6F8F3" font-size="18" font-weight="650">所选目录</text>
     <text x="876" y="132" fill="#4A5C52" font-size="18" font-weight="700" letter-spacing="1.2">03</text>
     <text x="876" y="176" fill="#182825" font-size="28" font-weight="700">直接写入</text>
-    <text x="876" y="218" fill="#182825" font-size="20">图片、视频、来源 JSON</text>
+    <text x="876" y="218" fill="#182825" font-size="20">图片、视频、全部轮播项</text>
     <text x="876" y="256" fill="#4A5C52" font-size="18">同名文件保留，不覆盖</text>
   </g>
 </svg>

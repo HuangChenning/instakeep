@@ -1,5 +1,5 @@
 import { CATEGORIES } from './model.js';
-export const DEFAULT_SETTINGS = Object.freeze({root:'',folderTemplate:'',filenameTemplate:'{date}_{id}_{index}',metadata:true});
+export const DEFAULT_SETTINGS = Object.freeze({root:'',folderTemplate:'',filenameTemplate:'{date}_{id}_{index}'});
 const fields = new Set(['username','date','type','id','index']);
 const extensions = new Set(['jpg','jpeg','png','webp','avif','mp4']);
 function segment(value) {
@@ -25,7 +25,6 @@ export function validateSettings(settings) {
     }
     if (/[{}]/.test(text.replace(/\{[^{}]*\}/g,''))) errors.push('模板括号不完整。');
   }
-  if (typeof values.metadata !== 'boolean') errors.push('来源信息设置必须为开关。');
   return {valid:errors.length === 0,errors};
 }
 export function highlightFolders(highlights) {

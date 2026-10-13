@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="440" viewBox="0 0 1200 440" role="img" aria-labelledby="title desc">
   <title id="title">InstaKeep</title>
-  <desc id="desc">A Chrome extension that writes images, video, carousel items, and a source JSON file from an open Instagram profile or post into a folder you choose.</desc>
+  <desc id="desc">A Chrome extension that writes images, video, and carousel items from an open Instagram profile or post into a folder you choose.</desc>
   <defs>
     <clipPath id="frame">
       <rect width="1200" height="440" rx="28"/>
@@ -17,7 +17,7 @@
       <text x="64" y="252" fill="#182825" font-size="22">Save posts from the open profile, or every</text>
       <text x="64" y="284" fill="#182825" font-size="22">image, video, and carousel item in this post,</text>
       <text x="64" y="316" fill="#182825" font-size="22">into a folder you choose.</text>
-      <text x="64" y="368" fill="#4A5C52" font-size="18" font-weight="600">Images · video · carousel · source JSON</text>
+      <text x="64" y="368" fill="#4A5C52" font-size="18" font-weight="600">Images · video · carousel · local folder</text>
     </g>
 
     <g id="folder-proof" transform="translate(688 48)">
@@ -41,8 +41,8 @@
       </g>
 
       <rect x="24" y="248" width="400" height="72" rx="8" fill="#E7EFE8" stroke="#215444" stroke-width="1.5"/>
-      <text x="40" y="278" fill="#182825" font-size="18" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">{date}_{id}.json</text>
-      <text x="40" y="302" fill="#215444" font-size="18" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif">Source: link, caption, media list</text>
+      <text x="40" y="278" fill="#182825" font-size="18" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">{date}_{id}_04.mp4</text>
+      <text x="40" y="302" fill="#215444" font-size="18" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif">Video</text>
     </g>
   </g>
 </svg>

@@ -67,8 +67,7 @@ async function send(type,fields={}) {
   return response.data;
 }
 function settingsInput() {
-  return Object.fromEntries(['root','folderTemplate','filenameTemplate','metadata'].map(name=>[name,
-    name==='metadata' ? settingsForm.elements[name].checked:settingsForm.elements[name].value]));
+  return Object.fromEntries(['root','folderTemplate','filenameTemplate'].map(name=>[name,settingsForm.elements[name].value]));
 }
 let initialized=false;
 async function refreshStatus() {
@@ -76,21 +75,20 @@ async function refreshStatus() {
     const {task,items,settings,destination}=await send('GET_STATUS');
     document.getElementById('destination-name').textContent=destination ? `保存文件夹：${destination}`:'请先选择保存文件夹。';
     if(!initialized) {
-      for(const [name,value] of Object.entries(settings)) {
-        if(name==='metadata')settingsForm.elements[name].checked=value;
-        else settingsForm.elements[name].value=value;
-      }
+      for(const [name,value] of Object.entries(settings))settingsForm.elements[name].value=value;
       initialized=true;
     }
     const labels={scanning:'扫描中',downloading:'下载中',paused:'已暂停',complete:'备份完成',incomplete:'有未解决失败',pending:'待扫描',unknown:'完整性未确认'};
+    document.getElementById('pause').disabled=!task || !['scanning','downloading'].includes(task.state);
+    document.getElementById('resume').disabled=task?.state!=='paused';
+    document.getElementById('retry').disabled=!task || !['paused','incomplete'].includes(task.state);
     const media=items.filter(item=>item.type==='media');
-    document.getElementById('saved-files').textContent=items.filter(item=>['succeeded','skipped'].includes(item.state) && item.actualPath).map(item=>item.actualPath).join('\n') || '暂无已确认保存的文件。';
+    document.getElementById('saved-files').textContent=media.filter(item=>['succeeded','skipped'].includes(item.state) && item.actualPath).map(item=>item.actualPath).join('\n') || '暂无已确认保存的文件。';
     document.getElementById('job-status').textContent=task ? [
       `@${task.context.username} · ${labels[task.state] ?? task.state}`,
       ...Object.entries(task.scans).map(([category,scan])=>`${category==='posts' ? '帖子':'Reels'}：${labels[scan.state] ?? scan.state}`),
       `已读取 ${new Set(items.map(item=>item.contentId)).size} 条内容；${media.length} 个媒体`,
       `媒体：成功 ${media.filter(item=>item.state==='succeeded').length}，重复跳过 ${media.filter(item=>item.state==='skipped').length}，失败/未确认 ${media.filter(item=>['failed','unknown'].includes(item.state)).length}`,
-      `来源 JSON：成功 ${items.filter(item=>item.type==='metadata' && item.state==='succeeded').length}`,
       task.reason,...(task.warnings ?? [])].filter(Boolean).join('\n'):'没有当前任务。';
   }catch(error){document.getElementById('job-status').textContent=error.message;}
 }
@@ -107,10 +105,16 @@ for(const [id,type] of [['start','START'],['single','START_SINGLE'],['pause','PA
     try {
       if(['START','START_SINGLE'].includes(type))await send('SAVE_SETTINGS',{settings:settingsInput()});
       await send(type,['START','START_SINGLE'].includes(type) ? {force:document.getElementById('force').checked}:{});
-      jobMessage.textContent=['START','START_SINGLE'].includes(type) ? '任务已开始；关闭弹窗后仍会继续。':'操作已提交。';
-      await refreshStatus();
+      jobMessage.textContent={
+        START:'批量任务已开始；关闭弹窗后仍会继续。',
+        START_SINGLE:'单帖任务已开始；关闭弹窗后仍会继续。',
+        PAUSE:'任务已暂停。',
+        RESUME:'恢复已开始；请保持原页面打开。',
+        RETRY_FAILED:'失败项已重新加入下载队列。',
+        CLEAR_HISTORY:'当前账号的完成记录已清除。'
+      }[type];
     }catch(error){jobMessage.textContent=error.message;}
-    finally{control.disabled=false;}
+    finally{control.disabled=false;await refreshStatus();}
   });
 }
 void refreshStatus();
