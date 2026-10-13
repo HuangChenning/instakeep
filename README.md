@@ -35,7 +35,6 @@ Before a profile backup, turn on the temporary observation at the bottom of the 
 ```bash
 git clone https://github.com/HuangChenning/instakeep.git
 cd instakeep
-npm test
 ```
 
 1. Open `chrome://extensions`, turn on Developer mode, choose “Load unpacked”, and select this repository.

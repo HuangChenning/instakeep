@@ -35,7 +35,6 @@ Chrome 扩展测试版。它使用浏览器里已经登录的 Instagram，把主
 ```bash
 git clone https://github.com/HuangChenning/instakeep.git
 cd instakeep
-npm test
 ```
 
 1. 打开 `chrome://extensions`，开启开发者模式，选择「加载已解压的扩展程序」，选中本仓库目录。
